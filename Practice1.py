@@ -12,18 +12,19 @@ import yfinance as yf
 st.set_page_config(layout="wide", page_title="WebApp_Demo")
 
 # Sidebar
-st.sidebar.title("Stock")
-symbol = st.sidebar.text_input('Please enter the stock symbol: ', 'NVDA').upper()
-# Selection for a specific time frame.
-col1, col2 = st.sidebar.columns(2, gap="medium")
-with col1:
-    sdate = st.date_input('Start Date',value=datetime.date(2023,1,1))
-with col2:
-    edate = st.date_input('End Date',value=datetime.date(2023,12,1))
+st.sidebar.title("Ticker")
+with st.sidebar.form(key='my_form'):
+    symbol = st.sidebar.text_input('Please enter the stock symbol: ', 'NVDA').upper()
+    submitted = st.form_submit_button(label="Submit")
+    col1, col2 = st.sidebar.columns(2, gap="medium")
+    with col1:
+      sdate = st.date_input('Start Date',value=datetime.date(2020,1,1))
+    with col2:
+      edate = st.date_input('End Date',value=datetime.date(2023,12,1))
 
-st.title(f"{symbol}")
-
-stock = yf.Ticker(symbol)
+if submitted:
+   st.title(f"{symbol}")
+   stock = yf.Ticker(symbol)
 if stock is not None:
   # Display company's basics
   st.write(f"# Sector : {stock.info['sector']}")
@@ -34,6 +35,12 @@ else:
 
 data = yf.download(symbol,start=sdate,end=edate)
 if data is not None:
-  st.line_chart(data['Close'],x_label="Date",y_label="Close")
+  fig = go.Figure(data=[go.Candlestick(x=data.index,
+                    open=data['Open'],
+                    high=data['High'],
+                    low=data['Low'],
+                    close=data['Close'])])
+  fig.update_layout(title=f"{symbol}", yaxis_title="Price", xaxis_title="Date")
+  st.plotly_chart(fig)
 else:
-    st.error("Failed to fetch historical data.")
+  st.error("Failed to fetch historical data.")
