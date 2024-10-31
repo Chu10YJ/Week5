@@ -29,8 +29,7 @@ if stock is not None:
   st.write(f"# Sector : {stock.info['sector']}")
   st.write(f"# Company Beta : {stock.info['beta']}")
   st.write(f"Market Cap : {stock.info['marketCap']}")
-  st.write(f"52 Week High : {stock.info['fiftyTwoWeekHigh']}")
-  st.write(f"52 Week Low : {stock.info['fiftyTwoWeekLow']}
+    
 else:
   st.error("Failed to fetch historical data.")
 
